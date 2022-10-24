@@ -1,0 +1,37 @@
+version: 3
+
+tasks:
+  build:
+    cmds:
+      - go build -o app cmd/server/main.go
+
+  run:
+    cmds:
+      - docker-compose up --build -d
+
+  stop:
+    cmds:
+      - docker-compose down
+
+  unit-test:
+    cmds:
+      - go test -tags=unit ./...
+
+  integration-test:
+    cmds:
+      - docker-compose up -d database
+      - go test -tags=integration -v ./...
+      - docker-compose down
+    env:
+      DB_HOST: localhost
+      DB_USER: root
+      DB_PASSWORD: postgres
+      DB_NAME: aluraflix
+      DB_PORT: 5432
+      DB_SSLMODE: disable
+
+  acceptance-test:
+    cmds:
+      - docker-compose up -d --build
+      - go test -tags=e2e -v ./...
+      - docker-compose down
