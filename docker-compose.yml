@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  database:
+    container_name: database
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: root
+      POSTGRES_DB: aluraflix
+    ports:
+      - "5432:5432"
+    networks:
+      - application
+
+  api:
+    container_name: api
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database
+    environment:
+      DB_HOST: "database"
+      DB_USER: "root"
+      DB_PASSWORD: "postgres"
+      DB_NAME: "aluraflix"
+      DB_PORT: "5432"
+      DB_SSLMODE: "disable"
+    networks:
+      - application
+
+networks:
+  application:
+    driver: bridge
