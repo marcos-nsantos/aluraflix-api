@@ -162,3 +162,32 @@ func TestUpdateVideo(t *testing.T) {
 		assert.ErrorIs(t, err, entity.ErrVideoNotFound)
 	})
 }
+
+func TestDeleteVideo(t *testing.T) {
+	repo := NewRepository(dbConn)
+
+	t.Run("should delete a video", func(t *testing.T) {
+		video := &entity.Video{
+			Title:       "O que é e pra que serve a linguagem Go?",
+			Description: "Você provavelmente já ouviu falar da linguagem de programação Go. Mas qual o propósito dela?",
+			URL:         "https://youtu.be/KfCNyIrqjsg",
+		}
+
+		err := repo.Create(context.Background(), video)
+		assert.NoError(t, err)
+
+		err = repo.Delete(context.Background(), video.ID)
+		assert.NoError(t, err)
+
+		video, err = repo.FindByID(context.Background(), video.ID)
+		assert.Error(t, err)
+		assert.ErrorIs(t, err, entity.ErrVideoNotFound)
+		assert.Empty(t, video)
+	})
+
+	t.Run("should return error when video does not exist", func(t *testing.T) {
+		err := repo.Delete(context.Background(), 9999)
+		assert.Error(t, err)
+		assert.ErrorIs(t, err, entity.ErrVideoNotFound)
+	})
+}

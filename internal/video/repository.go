@@ -2,6 +2,8 @@ package video
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/marcos-nsantos/aluraflix-api/internal/entity"
@@ -33,7 +35,7 @@ func (r Repository) Create(ctx context.Context, video *entity.Video) error {
 }
 
 func (r Repository) FindAll(ctx context.Context) ([]*entity.Video, error) {
-	query := `SELECT id, title, description, url, created_at, updated_at FROM videos`
+	query := `SELECT id, title, description, url, created_at, updated_at FROM videos WHERE deleted_at IS NULL`
 
 	rows, err := r.db.QueryContext(ctx, query)
 	if err != nil {
@@ -54,12 +56,14 @@ func (r Repository) FindAll(ctx context.Context) ([]*entity.Video, error) {
 }
 
 func (r Repository) FindByID(ctx context.Context, id uint64) (*entity.Video, error) {
-	query := `SELECT id, title, description, url, created_at, updated_at FROM videos WHERE id = $1`
+	query := `SELECT id, title, description, url, created_at, updated_at FROM videos WHERE id = $1 AND deleted_at IS NULL`
 
 	var video entity.Video
 	row := r.db.QueryRowContext(ctx, query, id)
 	if err := row.Scan(&video.ID, &video.Title, &video.Description, &video.URL, &video.CreatedAt, &video.UpdatedAt); err != nil {
-		return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, entity.ErrVideoNotFound
+		}
 	}
 
 	return &video, nil
@@ -75,6 +79,31 @@ func (r Repository) Update(ctx context.Context, video *entity.Video) error {
 	defer stmt.Close()
 
 	result, err := stmt.ExecContext(ctx, video.Title, video.Description, video.URL, video.UpdatedAt, video.ID)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return entity.ErrVideoNotFound
+	}
+
+	return nil
+}
+
+func (r Repository) Delete(ctx context.Context, id uint64) error {
+	query := `UPDATE videos SET deleted_at = NOW() WHERE id = $1`
+
+	stmt, err := r.db.PrepareContext(ctx, query)
+	if err != nil {
+		return err
+	}
+
+	result, err := stmt.ExecContext(ctx, id)
 	if err != nil {
 		return err
 	}
