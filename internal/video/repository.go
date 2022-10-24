@@ -31,3 +31,24 @@ func (r Repository) Create(ctx context.Context, video *entity.Video) error {
 
 	return nil
 }
+
+func (r Repository) FindAll(ctx context.Context) ([]*entity.Video, error) {
+	query := `SELECT id, title, description, url, created_at, updated_at FROM videos`
+
+	rows, err := r.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var videos []*entity.Video
+	for rows.Next() {
+		var video entity.Video
+		if err = rows.Scan(&video.ID, &video.Title, &video.Description, &video.URL, &video.CreatedAt, &video.UpdatedAt); err != nil {
+			return nil, err
+		}
+		videos = append(videos, &video)
+	}
+
+	return videos, nil
+}
