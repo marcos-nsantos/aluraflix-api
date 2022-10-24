@@ -3,7 +3,7 @@ package entity
 import "time"
 
 type Video struct {
-	ID          uint
+	ID          uint64
 	Title       string
 	Description string
 	URL         string
