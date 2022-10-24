@@ -64,3 +64,29 @@ func (r Repository) FindByID(ctx context.Context, id uint64) (*entity.Video, err
 
 	return &video, nil
 }
+
+func (r Repository) Update(ctx context.Context, video *entity.Video) error {
+	query := `UPDATE videos SET title = $1, description = $2, url = $3, updated_at = $4 WHERE id = $5`
+
+	stmt, err := r.db.PrepareContext(ctx, query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	result, err := stmt.ExecContext(ctx, video.Title, video.Description, video.URL, video.UpdatedAt, video.ID)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return entity.ErrVideoNotFound
+	}
+
+	return nil
+}

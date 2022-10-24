@@ -118,3 +118,47 @@ func TestFindVideoByID(t *testing.T) {
 		assert.Equal(t, "https://youtu.be/KfCNyIrqjsg", video.URL)
 	})
 }
+
+func TestUpdateVideo(t *testing.T) {
+	repo := NewRepository(dbConn)
+
+	t.Run("should update a video", func(t *testing.T) {
+		video := &entity.Video{
+			Title:       "O que é e pra que serve a linguagem Go?",
+			Description: "Você provavelmente já ouviu falar da linguagem de programação Go. Mas qual o propósito dela?",
+			URL:         "https://youtu.be/KfCNyIrqjsg",
+		}
+
+		err := repo.Create(context.Background(), video)
+		assert.NoError(t, err)
+
+		video.Title = "O que é e pra que serve a linguagem Python?"
+		video.Description = "Você provavelmente já ouviu falar da linguagem de programação Python. Mas qual o propósito dela?"
+		video.URL = "https://youtu.be/KfCNyIrqjsg"
+
+		err = repo.Update(context.Background(), video)
+		assert.NoError(t, err)
+
+		video, err = repo.FindByID(context.Background(), video.ID)
+		assert.NoError(t, err)
+		assert.NotEmpty(t, video)
+		assert.NotEmpty(t, video.ID)
+		assert.NotEmpty(t, video.CreatedAt)
+		assert.NotEmpty(t, video.UpdatedAt)
+		assert.Equal(t, "O que é e pra que serve a linguagem Python?", video.Title)
+		assert.Equal(t, "Você provavelmente já ouviu falar da linguagem de programação Python. Mas qual o propósito dela?", video.Description)
+	})
+
+	t.Run("should return error when video does not exist", func(t *testing.T) {
+		video := &entity.Video{
+			ID:          9999,
+			Title:       "O que é e pra que serve a linguagem Go?",
+			Description: "Você provavelmente já ouviu falar da linguagem de programação Go. Mas qual o propósito dela?",
+			URL:         "https://youtu.be/KfCNyIrqjsg",
+		}
+
+		err := repo.Update(context.Background(), video)
+		assert.Error(t, err)
+		assert.ErrorIs(t, err, entity.ErrVideoNotFound)
+	})
+}
