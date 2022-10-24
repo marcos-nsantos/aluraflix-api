@@ -93,3 +93,28 @@ func TestFindAllVideos(t *testing.T) {
 		assert.GreaterOrEqual(t, len(videos), 3)
 	})
 }
+
+func TestFindVideoByID(t *testing.T) {
+	repo := NewRepository(dbConn)
+
+	t.Run("should return a video by ID", func(t *testing.T) {
+		video := &entity.Video{
+			Title:       "O que é e pra que serve a linguagem Go?",
+			Description: "Você provavelmente já ouviu falar da linguagem de programação Go. Mas qual o propósito dela?",
+			URL:         "https://youtu.be/KfCNyIrqjsg",
+		}
+
+		err := repo.Create(context.Background(), video)
+		assert.NoError(t, err)
+
+		video, err = repo.FindByID(context.Background(), video.ID)
+		assert.NoError(t, err)
+		assert.NotEmpty(t, video)
+		assert.NotEmpty(t, video.ID)
+		assert.NotEmpty(t, video.CreatedAt)
+		assert.NotEmpty(t, video.UpdatedAt)
+		assert.Equal(t, "O que é e pra que serve a linguagem Go?", video.Title)
+		assert.Equal(t, "Você provavelmente já ouviu falar da linguagem de programação Go. Mas qual o propósito dela?", video.Description)
+		assert.Equal(t, "https://youtu.be/KfCNyIrqjsg", video.URL)
+	})
+}

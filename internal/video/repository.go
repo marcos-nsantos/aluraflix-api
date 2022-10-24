@@ -52,3 +52,15 @@ func (r Repository) FindAll(ctx context.Context) ([]*entity.Video, error) {
 
 	return videos, nil
 }
+
+func (r Repository) FindByID(ctx context.Context, id uint64) (*entity.Video, error) {
+	query := `SELECT id, title, description, url, created_at, updated_at FROM videos WHERE id = $1`
+
+	var video entity.Video
+	row := r.db.QueryRowContext(ctx, query, id)
+	if err := row.Scan(&video.ID, &video.Title, &video.Description, &video.URL, &video.CreatedAt, &video.UpdatedAt); err != nil {
+		return nil, err
+	}
+
+	return &video, nil
+}
