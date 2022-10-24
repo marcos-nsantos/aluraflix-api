@@ -29,3 +29,21 @@ func (d *Database) Migrate(path string) error {
 
 	return nil
 }
+
+func (d *Database) UndoMigrations(path string) error {
+	driver, err := postgres.WithInstance(d.Client.DB, &postgres.Config{})
+	if err != nil {
+		return fmt.Errorf("could not create the postgres driver: %w", err)
+	}
+
+	m, err := migrate.NewWithDatabaseInstance(path, "postgres", driver)
+	if err != nil {
+		return fmt.Errorf("could not create the migrate instance: %w", err)
+	}
+
+	if err = m.Down(); err != nil {
+		return fmt.Errorf("could not drop the database: %w", err)
+	}
+
+	return nil
+}
