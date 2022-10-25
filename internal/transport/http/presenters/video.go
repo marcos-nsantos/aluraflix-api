@@ -21,3 +21,11 @@ func VideoResponse(video *entity.Video) *Video {
 		UpdatedAt:   video.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}
 }
+
+func VideosResponse(videos []*entity.Video) []*Video {
+	var videosResponse []*Video
+	for _, video := range videos {
+		videosResponse = append(videosResponse, VideoResponse(video))
+	}
+	return videosResponse
+}

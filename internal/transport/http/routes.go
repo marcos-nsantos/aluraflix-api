@@ -15,6 +15,7 @@ import (
 func HandleVideoRequests(r *chi.Mux, service video.Service) {
 	r.Group(func(r chi.Router) {
 		r.Post("/videos", postVideo(service))
+		r.Get("/videos", getAllVideos(service))
 	})
 }
 

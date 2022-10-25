@@ -48,3 +48,16 @@ func postVideo(service video.Service) http.HandlerFunc {
 		presenters.JSONResponse(w, http.StatusCreated, videoResponse)
 	}
 }
+
+func getAllVideos(service video.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		videos, err := service.GetAll(r.Context())
+		if err != nil {
+			presenters.JSONErrorResponse(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		videosResponse := presenters.VideosResponse(videos)
+		presenters.JSONResponse(w, http.StatusOK, videosResponse)
+	}
+}
