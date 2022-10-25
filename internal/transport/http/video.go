@@ -122,3 +122,25 @@ func updateVideo(service video.Service) http.HandlerFunc {
 		presenters.JSONResponse(w, http.StatusOK, videoResponse)
 	}
 }
+
+func deleteVideo(service video.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := chi.URLParam(r, "id")
+		idUint, err := strconv.ParseUint(id, 10, 64)
+		if err != nil {
+			presenters.JSONErrorResponse(w, http.StatusBadRequest, errors.New("invalid id"))
+			return
+		}
+
+		if err = service.Delete(r.Context(), idUint); err != nil {
+			if errors.Is(err, entity.ErrVideoNotFound) {
+				presenters.JSONErrorResponse(w, http.StatusNotFound, err)
+				return
+			}
+			presenters.JSONErrorResponse(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		presenters.JSONResponse(w, http.StatusNoContent, nil)
+	}
+}

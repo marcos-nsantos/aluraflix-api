@@ -18,6 +18,7 @@ func HandleVideoRequests(r *chi.Mux, service video.Service) {
 		r.Get("/videos", getAllVideos(service))
 		r.Get("/videos/{id}", getVideoByID(service))
 		r.Put("/videos/{id}", updateVideo(service))
+		r.Delete("/videos/{id}", deleteVideo(service))
 	})
 }
 
