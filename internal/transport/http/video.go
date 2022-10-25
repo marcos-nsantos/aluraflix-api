@@ -87,3 +87,38 @@ func getVideoByID(service video.Service) http.HandlerFunc {
 		presenters.JSONResponse(w, http.StatusOK, videoResponse)
 	}
 }
+
+func updateVideo(service video.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := chi.URLParam(r, "id")
+		idUint, err := strconv.ParseUint(id, 10, 64)
+		if err != nil {
+			presenters.JSONErrorResponse(w, http.StatusBadRequest, errors.New("invalid id"))
+			return
+		}
+
+		var postVideo PostVideoRequest
+		if err = json.NewDecoder(r.Body).Decode(&postVideo); err != nil {
+			presenters.JSONErrorResponse(w, http.StatusBadRequest, errors.New("invalid request body"))
+			return
+		}
+
+		if ok, errs := validator.Validate(postVideo); !ok {
+			presenters.JSONValidationResponse(w, errs)
+			return
+		}
+
+		videoConverted := convertPostVideoRequestToVideo(&postVideo)
+		if err = service.Update(r.Context(), &videoConverted, idUint); err != nil {
+			if errors.Is(err, entity.ErrVideoNotFound) {
+				presenters.JSONErrorResponse(w, http.StatusNotFound, err)
+				return
+			}
+			presenters.JSONErrorResponse(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		videoResponse := presenters.VideoResponse(&videoConverted)
+		presenters.JSONResponse(w, http.StatusOK, videoResponse)
+	}
+}
