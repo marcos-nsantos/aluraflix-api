@@ -1,4 +1,4 @@
-package controllers
+package httpTransport
 
 import (
 	"encoding/json"
@@ -25,7 +25,7 @@ func convertPostVideoRequestToVideo(video *PostVideoRequest) entity.Video {
 	}
 }
 
-func PostVideo(service video.Service) http.HandlerFunc {
+func postVideo(service video.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var postVideo PostVideoRequest
 		if err := json.NewDecoder(r.Body).Decode(&postVideo); err != nil {

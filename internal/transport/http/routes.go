@@ -9,13 +9,12 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/marcos-nsantos/aluraflix-api/internal/transport/http/controllers"
 	"github.com/marcos-nsantos/aluraflix-api/internal/video"
 )
 
 func HandleVideoRequests(r *chi.Mux, service video.Service) {
 	r.Group(func(r chi.Router) {
-		r.Post("/videos", controllers.PostVideo(service))
+		r.Post("/videos", postVideo(service))
 	})
 }
 
