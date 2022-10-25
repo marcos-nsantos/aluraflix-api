@@ -25,3 +25,8 @@ func (s *service) GetAll(ctx context.Context) ([]*entity.Video, error) {
 func (s *service) GetByID(ctx context.Context, id uint64) (*entity.Video, error) {
 	return s.repo.FindByID(ctx, id)
 }
+
+func (s *service) Update(ctx context.Context, video *entity.Video, id uint64) error {
+	video.ID = id
+	return s.repo.Update(ctx, video)
+}
