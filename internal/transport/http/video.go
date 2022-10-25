@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strconv"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/marcos-nsantos/aluraflix-api/internal/entity"
 	"github.com/marcos-nsantos/aluraflix-api/internal/transport/http/presenters"
 	"github.com/marcos-nsantos/aluraflix-api/internal/validator"
@@ -59,5 +61,29 @@ func getAllVideos(service video.Service) http.HandlerFunc {
 
 		videosResponse := presenters.VideosResponse(videos)
 		presenters.JSONResponse(w, http.StatusOK, videosResponse)
+	}
+}
+
+func getVideoByID(service video.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := chi.URLParam(r, "id")
+		idUint, err := strconv.ParseUint(id, 10, 64)
+		if err != nil {
+			presenters.JSONErrorResponse(w, http.StatusBadRequest, errors.New("invalid id"))
+			return
+		}
+
+		videoFromDB, err := service.GetByID(r.Context(), idUint)
+		if err != nil {
+			if errors.Is(err, entity.ErrVideoNotFound) {
+				presenters.JSONErrorResponse(w, http.StatusNotFound, err)
+				return
+			}
+			presenters.JSONErrorResponse(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		videoResponse := presenters.VideoResponse(videoFromDB)
+		presenters.JSONResponse(w, http.StatusOK, videoResponse)
 	}
 }
