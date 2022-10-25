@@ -28,18 +28,17 @@ func Validate(data any) (bool, map[string][]string) {
 	errors := make(map[string][]string)
 	reflected := reflect.ValueOf(data)
 
-	for _, err := range err.(validator.ValidationErrors) {
-		// Attempt to find field by name and get json tag name
-		field, _ := reflected.Type().FieldByName(err.StructField())
-		var name string
+	if err != nil {
+		for _, err := range err.(validator.ValidationErrors) {
+			field, _ := reflected.Type().FieldByName(err.StructField())
+			var name string
 
-		//If json tag doesn't exist, use lower case of name
-		if name = field.Tag.Get("json"); name == "" {
-			name = strings.ToLower(err.StructField())
+			if name = field.Tag.Get("json"); name == "" {
+				name = strings.ToLower(err.StructField())
+			}
+
+			errors[name] = append(errors[name], err.Translate(trans))
 		}
-
-		// Add error to map translating it
-		errors[name] = append(errors[name], err.Translate(trans))
 	}
 
 	if len(errors) == 0 {
