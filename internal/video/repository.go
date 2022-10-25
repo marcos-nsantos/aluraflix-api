@@ -70,7 +70,7 @@ func (r Repository) FindByID(ctx context.Context, id uint64) (*entity.Video, err
 }
 
 func (r Repository) Update(ctx context.Context, video *entity.Video) error {
-	query := `UPDATE videos SET title = $1, description = $2, url = $3, updated_at = $4 WHERE id = $5`
+	query := `UPDATE videos SET title = $1, description = $2, url = $3, updated_at = NOW() WHERE id = $4 AND deleted_at IS NULL`
 
 	stmt, err := r.db.PrepareContext(ctx, query)
 	if err != nil {
@@ -78,7 +78,7 @@ func (r Repository) Update(ctx context.Context, video *entity.Video) error {
 	}
 	defer stmt.Close()
 
-	result, err := stmt.ExecContext(ctx, video.Title, video.Description, video.URL, video.UpdatedAt, video.ID)
+	result, err := stmt.ExecContext(ctx, video.Title, video.Description, video.URL, video.ID)
 	if err != nil {
 		return err
 	}
