@@ -17,3 +17,7 @@ type service struct {
 func (s *service) Post(ctx context.Context, video *entity.Video) error {
 	return s.repo.Insert(ctx, video)
 }
+
+func (s *service) GetAll(ctx context.Context) ([]*entity.Video, error) {
+	return s.repo.FindAll(ctx)
+}
