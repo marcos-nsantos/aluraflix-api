@@ -1,0 +1,50 @@
+package controllers
+
+import (
+	"encoding/json"
+	"errors"
+	"net/http"
+
+	"github.com/marcos-nsantos/aluraflix-api/internal/entity"
+	"github.com/marcos-nsantos/aluraflix-api/internal/transport/http/presenters"
+	"github.com/marcos-nsantos/aluraflix-api/internal/validator"
+	"github.com/marcos-nsantos/aluraflix-api/internal/video"
+)
+
+type PostVideoRequest struct {
+	Title       string `json:"title" validate:"required,notblank"`
+	Description string `json:"description" validate:"required,notblank"`
+	URL         string `json:"url" validate:"required,url"`
+}
+
+func convertPostVideoRequestToVideo(video *PostVideoRequest) entity.Video {
+	return entity.Video{
+		Title:       video.Title,
+		Description: video.Description,
+		URL:         video.URL,
+	}
+}
+
+func PostVideo(service video.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var postVideo PostVideoRequest
+		if err := json.NewDecoder(r.Body).Decode(&postVideo); err != nil {
+			presenters.JSONErrorResponse(w, http.StatusBadRequest, errors.New("invalid request body"))
+			return
+		}
+
+		if ok, err := validator.Validate(postVideo); !ok {
+			presenters.JSONValidationResponse(w, err)
+			return
+		}
+
+		videoConverted := convertPostVideoRequestToVideo(&postVideo)
+		if err := service.Post(r.Context(), &videoConverted); err != nil {
+			presenters.JSONErrorResponse(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		videoResponse := presenters.VideoResponse(&videoConverted)
+		presenters.JSONResponse(w, http.StatusCreated, videoResponse)
+	}
+}
