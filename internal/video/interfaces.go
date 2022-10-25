@@ -21,3 +21,7 @@ type Repor interface {
 	Writer
 	Reader
 }
+
+type Service interface {
+	Post(ctx context.Context, video *entity.Video) error
+}
