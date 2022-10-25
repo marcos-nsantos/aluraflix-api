@@ -3,6 +3,7 @@ module github.com/marcos-nsantos/aluraflix-api
 go 1.19
 
 require (
+	github.com/go-chi/chi/v5 v5.0.7
 	github.com/go-playground/locales v0.14.0
 	github.com/go-playground/universal-translator v0.18.0
 	github.com/go-playground/validator/v10 v10.11.1
