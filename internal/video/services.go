@@ -21,3 +21,7 @@ func (s *service) Post(ctx context.Context, video *entity.Video) error {
 func (s *service) GetAll(ctx context.Context) ([]*entity.Video, error) {
 	return s.repo.FindAll(ctx)
 }
+
+func (s *service) GetByID(ctx context.Context, id uint64) (*entity.Video, error) {
+	return s.repo.FindByID(ctx, id)
+}

@@ -25,4 +25,5 @@ type Repor interface {
 type Service interface {
 	Post(ctx context.Context, video *entity.Video) error
 	GetAll(ctx context.Context) ([]*entity.Video, error)
+	GetByID(ctx context.Context, id uint64) (*entity.Video, error)
 }
