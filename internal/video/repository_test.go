@@ -38,17 +38,17 @@ func TestMain(t *testing.M) {
 	os.Exit(code)
 }
 
-func TestCreateVideo(t *testing.T) {
+func TestInsertVideo(t *testing.T) {
 	repo := NewRepository(dbConn)
 
-	t.Run("should create a new video", func(t *testing.T) {
+	t.Run("should insert a video", func(t *testing.T) {
 		video := &entity.Video{
 			Title:       "O que é e pra que serve a linguagem Go?",
 			Description: "Você provavelmente já ouviu falar da linguagem de programação Go. Mas qual o propósito dela?",
 			URL:         "https://youtu.be/KfCNyIrqjsg",
 		}
 
-		err := repo.Create(context.Background(), video)
+		err := repo.Insert(context.Background(), video)
 		assert.NoError(t, err)
 		assert.NotEmpty(t, video.ID)
 		assert.NotEmpty(t, video.CreatedAt)
@@ -83,7 +83,7 @@ func TestFindAllVideos(t *testing.T) {
 		}
 
 		for _, video := range videos {
-			err := repo.Create(context.Background(), video)
+			err := repo.Insert(context.Background(), video)
 			assert.NoError(t, err)
 		}
 
@@ -104,7 +104,7 @@ func TestFindVideoByID(t *testing.T) {
 			URL:         "https://youtu.be/KfCNyIrqjsg",
 		}
 
-		err := repo.Create(context.Background(), video)
+		err := repo.Insert(context.Background(), video)
 		assert.NoError(t, err)
 
 		video, err = repo.FindByID(context.Background(), video.ID)
@@ -129,7 +129,7 @@ func TestUpdateVideo(t *testing.T) {
 			URL:         "https://youtu.be/KfCNyIrqjsg",
 		}
 
-		err := repo.Create(context.Background(), video)
+		err := repo.Insert(context.Background(), video)
 		assert.NoError(t, err)
 
 		video.Title = "O que é e pra que serve a linguagem Python?"
@@ -173,7 +173,7 @@ func TestDeleteVideo(t *testing.T) {
 			URL:         "https://youtu.be/KfCNyIrqjsg",
 		}
 
-		err := repo.Create(context.Background(), video)
+		err := repo.Insert(context.Background(), video)
 		assert.NoError(t, err)
 
 		err = repo.Delete(context.Background(), video.ID)

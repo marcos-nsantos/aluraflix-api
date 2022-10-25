@@ -7,7 +7,7 @@ import (
 )
 
 type Writer interface {
-	Create(ctx context.Context, video *entity.Video) error
+	Insert(ctx context.Context, video *entity.Video) error
 	Update(ctx context.Context, video *entity.Video) error
 	Delete(ctx context.Context, id uint64) error
 }
