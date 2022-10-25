@@ -7,6 +7,7 @@ import (
 	"github.com/go-playground/locales/pt_BR"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
+	"github.com/go-playground/validator/v10/non-standard/validators"
 	ptBRTranslation "github.com/go-playground/validator/v10/translations/pt_BR"
 )
 
@@ -46,4 +47,10 @@ func Validate(data any) (bool, map[string][]string) {
 	}
 
 	return false, errors
+}
+
+func RegisterValidators() error {
+	validate = validator.New()
+	err := validate.RegisterValidation("notblank", validators.NotBlank)
+	return err
 }
