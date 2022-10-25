@@ -27,4 +27,5 @@ type Service interface {
 	GetAll(ctx context.Context) ([]*entity.Video, error)
 	GetByID(ctx context.Context, id uint64) (*entity.Video, error)
 	Update(ctx context.Context, video *entity.Video, id uint64) error
+	Delete(ctx context.Context, id uint64) error
 }

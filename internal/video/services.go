@@ -30,3 +30,7 @@ func (s *service) Update(ctx context.Context, video *entity.Video, id uint64) er
 	video.ID = id
 	return s.repo.Update(ctx, video)
 }
+
+func (s *service) Delete(ctx context.Context, id uint64) error {
+	return s.repo.Delete(ctx, id)
+}
