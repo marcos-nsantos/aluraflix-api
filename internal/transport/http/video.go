@@ -141,6 +141,6 @@ func deleteVideo(service video.Service) http.HandlerFunc {
 			return
 		}
 
-		presenters.JSONResponse(w, http.StatusNoContent, nil)
+		presenters.JSONResponse(w, http.StatusOK, "video deleted")
 	}
 }
