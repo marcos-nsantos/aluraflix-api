@@ -3,9 +3,9 @@ package presenters
 import "github.com/marcos-nsantos/aluraflix-api/internal/entity"
 
 type Category struct {
-	ID        uint64
-	Title     string
-	Color     string
+	ID        uint64 `json:"id"`
+	Title     string `json:"title"`
+	Color     string `json:"color"`
 	CreatedAt string `json:"created_at,omitempty"`
 	UpdatedAt string `json:"updated_at,omitempty"`
 }
