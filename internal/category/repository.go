@@ -2,6 +2,8 @@ package category
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/marcos-nsantos/aluraflix-api/internal/entity"
@@ -51,4 +53,19 @@ func (r *Repository) FindAll(ctx context.Context) ([]*entity.Category, error) {
 	}
 
 	return categories, nil
+}
+
+func (r *Repository) FindByID(ctx context.Context, id uint64) (*entity.Category, error) {
+	query := `SELECT id, title, color, created_at, updated_at FROM categories WHERE id = $1 AND deleted_at IS NULL`
+
+	var category entity.Category
+	row := r.db.QueryRowContext(ctx, query, id)
+	err := row.Scan(&category.ID, &category.Title, &category.Color, &category.CreatedAt, &category.UpdatedAt)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, entity.ErrCategoryNotFound
+		}
+	}
+
+	return &category, nil
 }
