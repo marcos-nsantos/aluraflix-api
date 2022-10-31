@@ -148,3 +148,30 @@ func TestUpdateCategory(t *testing.T) {
 		assert.ErrorIs(t, err, entity.ErrCategoryNotFound)
 	})
 }
+
+func TestDeleteCategory(t *testing.T) {
+	repo := NewRepository(dbConn)
+
+	t.Run("should delete a category", func(t *testing.T) {
+		category := &entity.Category{
+			Title: "Gopher Blue",
+			Color: "#00ADD8",
+		}
+		err := repo.Insert(context.Background(), category)
+		assert.NoError(t, err)
+
+		err = repo.Delete(context.Background(), category.ID)
+		assert.NoError(t, err)
+
+		category, err = repo.FindByID(context.Background(), category.ID)
+		assert.Error(t, err)
+		assert.ErrorIs(t, err, entity.ErrCategoryNotFound)
+		assert.Nil(t, category)
+	})
+
+	t.Run("should not delete a category", func(t *testing.T) {
+		err := repo.Delete(context.Background(), 9999)
+		assert.Error(t, err)
+		assert.ErrorIs(t, err, entity.ErrCategoryNotFound)
+	})
+}

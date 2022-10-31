@@ -95,3 +95,29 @@ func (r *Repository) Update(ctx context.Context, category *entity.Category) erro
 
 	return nil
 }
+
+func (r *Repository) Delete(ctx context.Context, id uint64) error {
+	query := `UPDATE categories SET deleted_at = NOW() WHERE id = $1`
+
+	stmt, err := r.db.PrepareContext(ctx, query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	res, err := stmt.ExecContext(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return entity.ErrCategoryNotFound
+	}
+
+	return nil
+}
