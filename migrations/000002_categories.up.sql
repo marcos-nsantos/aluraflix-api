@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS categories
+(
+    id         SERIAL PRIMARY KEY,
+    title      VARCHAR(40) NOT NULL,
+    color      VARCHAR(15) NOT NULL,
+    created_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
+)
