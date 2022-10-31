@@ -10,16 +10,18 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/marcos-nsantos/aluraflix-api/internal/category"
 	"github.com/marcos-nsantos/aluraflix-api/internal/video"
 )
 
-func HandleRequests(r *chi.Mux, vs video.Service) {
+func HandleRequests(r *chi.Mux, vs video.Service, cs category.Service) {
 	r.Use(middleware.Logger)
 	r.Use(middleware.AllowContentType("application/json"))
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Heartbeat("/ping"))
 
 	handleVideoRequests(r, vs)
+	handleCategoryRequests(r, cs)
 }
 
 func handleVideoRequests(r *chi.Mux, service video.Service) {
@@ -29,6 +31,12 @@ func handleVideoRequests(r *chi.Mux, service video.Service) {
 		r.Get("/videos/{id}", getVideoByID(service))
 		r.Put("/videos/{id}", updateVideo(service))
 		r.Delete("/videos/{id}", deleteVideo(service))
+	})
+}
+
+func handleCategoryRequests(r *chi.Mux, service category.Service) {
+	r.Group(func(r chi.Router) {
+		r.Post("/categories", postCategory(service))
 	})
 }
 

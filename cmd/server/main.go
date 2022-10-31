@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/marcos-nsantos/aluraflix-api/internal/category"
 	"github.com/marcos-nsantos/aluraflix-api/internal/database"
 	httpTransport "github.com/marcos-nsantos/aluraflix-api/internal/transport/http"
 	"github.com/marcos-nsantos/aluraflix-api/internal/validator"
@@ -32,8 +33,10 @@ func run() error {
 
 	videoRepo := video.NewRepository(db.Client)
 	videoServices := video.NewService(videoRepo)
+	categoryRepo := category.NewRepository(db.Client)
+	categoryServices := category.NewService(categoryRepo)
 
-	httpTransport.HandleRequests(r, videoServices)
+	httpTransport.HandleRequests(r, videoServices, categoryServices)
 	if err = httpTransport.Handle(&httpServer); err != nil {
 		return err
 	}
