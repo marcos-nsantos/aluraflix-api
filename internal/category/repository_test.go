@@ -95,7 +95,6 @@ func TestFindByIDCategory(t *testing.T) {
 		assert.NoError(t, err)
 
 		category, err = repo.FindByID(context.Background(), category.ID)
-		fmt.Println(category)
 		assert.NoError(t, err)
 		assert.Equal(t, category.Title, "Gopher Blue")
 		assert.Equal(t, category.Color, "#00ADD8")
@@ -106,6 +105,46 @@ func TestFindByIDCategory(t *testing.T) {
 	t.Run("should not find a category by id", func(t *testing.T) {
 		category, err := repo.FindByID(context.Background(), 9999)
 		assert.Error(t, err)
+		assert.ErrorIs(t, err, entity.ErrCategoryNotFound)
 		assert.Nil(t, category)
+	})
+}
+
+func TestUpdateCategory(t *testing.T) {
+	repo := NewRepository(dbConn)
+
+	t.Run("should update a category", func(t *testing.T) {
+		category := &entity.Category{
+			Title: "Gopher Blue",
+			Color: "#00ADD8",
+		}
+		err := repo.Insert(context.Background(), category)
+		assert.NoError(t, err)
+		categoryUpdatedAtFirst := category.UpdatedAt
+
+		category.Title = "Gopher Green"
+		category.Color = "#00FF00"
+
+		err = repo.Update(context.Background(), category)
+		assert.NoError(t, err)
+
+		category, err = repo.FindByID(context.Background(), category.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, category.Title, "Gopher Green")
+		assert.Equal(t, category.Color, "#00FF00")
+		assert.NotEmpty(t, category.CreatedAt)
+		assert.NotEmpty(t, category.UpdatedAt)
+		assert.NotEqual(t, category.UpdatedAt, categoryUpdatedAtFirst)
+	})
+
+	t.Run("should not update a category", func(t *testing.T) {
+		category := &entity.Category{
+			ID:    9999,
+			Title: "Gopher Blue",
+			Color: "#00ADD8",
+		}
+		err := repo.Update(context.Background(), category)
+		assert.Error(t, err)
+		assert.ErrorIs(t, err, entity.ErrCategoryNotFound)
 	})
 }

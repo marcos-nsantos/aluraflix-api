@@ -69,3 +69,29 @@ func (r *Repository) FindByID(ctx context.Context, id uint64) (*entity.Category,
 
 	return &category, nil
 }
+
+func (r *Repository) Update(ctx context.Context, category *entity.Category) error {
+	query := `UPDATE categories SET title = $1, color = $2, updated_at = NOW() WHERE id = $3`
+
+	stmt, err := r.db.PrepareContext(ctx, query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	res, err := stmt.ExecContext(ctx, category.Title, category.Color, category.ID)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return entity.ErrCategoryNotFound
+	}
+
+	return nil
+}
