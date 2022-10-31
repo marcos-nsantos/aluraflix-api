@@ -21,3 +21,7 @@ type Repor interface {
 	Reader
 	Writer
 }
+
+type Service interface {
+	Post(ctx context.Context, category *entity.Category) error
+}
