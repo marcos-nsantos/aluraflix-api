@@ -31,3 +31,24 @@ func (r *Repository) Insert(ctx context.Context, video *entity.Category) error {
 
 	return nil
 }
+
+func (r *Repository) FindAll(ctx context.Context) ([]*entity.Category, error) {
+	query := `SELECT id, title, color, created_at, updated_at FROM categories WHERE deleted_at IS NULL`
+
+	rows, err := r.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var categories []*entity.Category
+	for rows.Next() {
+		var category entity.Category
+		if err = rows.Scan(&category.ID, &category.Title, &category.Color, &category.CreatedAt, &category.UpdatedAt); err != nil {
+			return nil, err
+		}
+		categories = append(categories, &category)
+	}
+
+	return categories, nil
+}
