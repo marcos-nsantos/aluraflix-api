@@ -9,10 +9,20 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/marcos-nsantos/aluraflix-api/internal/video"
 )
 
-func HandleVideoRequests(r *chi.Mux, service video.Service) {
+func HandleRequests(r *chi.Mux, vs video.Service) {
+	r.Use(middleware.Logger)
+	r.Use(middleware.AllowContentType("application/json"))
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.Heartbeat("/ping"))
+
+	handleVideoRequests(r, vs)
+}
+
+func handleVideoRequests(r *chi.Mux, service video.Service) {
 	r.Group(func(r chi.Router) {
 		r.Post("/videos", postVideo(service))
 		r.Get("/videos", getAllVideos(service))
