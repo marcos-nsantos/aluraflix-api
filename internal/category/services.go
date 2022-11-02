@@ -29,3 +29,7 @@ func (s *service) GetByID(ctx context.Context, id uint64) (*entity.Category, err
 func (s *service) Update(ctx context.Context, category *entity.Category) error {
 	return s.repo.Update(ctx, category)
 }
+
+func (s *service) Delete(ctx context.Context, id uint64) error {
+	return s.repo.Delete(ctx, id)
+}

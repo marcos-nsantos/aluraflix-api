@@ -27,4 +27,5 @@ type Service interface {
 	GetAll(ctx context.Context) ([]*entity.Category, error)
 	GetByID(ctx context.Context, id uint64) (*entity.Category, error)
 	Update(ctx context.Context, category *entity.Category) error
+	Delete(ctx context.Context, id uint64) error
 }
