@@ -7,6 +7,7 @@ type Video struct {
 	Title       string
 	Description string
 	URL         string
+	CategoryID  uint64
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }

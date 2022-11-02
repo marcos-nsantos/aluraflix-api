@@ -30,11 +30,6 @@ func TestMain(t *testing.M) {
 
 	code := t.Run()
 
-	err = db.UndoMigrations("file://../..//migrations")
-	if err != nil {
-		fmt.Println(err)
-	}
-
 	os.Exit(code)
 }
 
