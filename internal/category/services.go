@@ -17,3 +17,7 @@ type service struct {
 func (s *service) Post(ctx context.Context, category *entity.Category) error {
 	return s.repo.Insert(ctx, category)
 }
+
+func (s *service) GetAll(ctx context.Context) ([]*entity.Category, error) {
+	return s.repo.FindAll(ctx)
+}

@@ -24,4 +24,5 @@ type Repor interface {
 
 type Service interface {
 	Post(ctx context.Context, category *entity.Category) error
+	GetAll(ctx context.Context) ([]*entity.Category, error)
 }
