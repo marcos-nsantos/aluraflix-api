@@ -19,3 +19,11 @@ func CategoryResponse(category *entity.Category) *Category {
 		UpdatedAt: category.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}
 }
+
+func CategoriesResponse(categories []*entity.Category) []*Category {
+	var categoriesResponse []*Category
+	for _, category := range categories {
+		categoriesResponse = append(categoriesResponse, CategoryResponse(category))
+	}
+	return categoriesResponse
+}
