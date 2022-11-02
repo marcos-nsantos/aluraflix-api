@@ -45,3 +45,7 @@ func (s *service) Update(ctx context.Context, video *entity.Video, id uint64) er
 func (s *service) Delete(ctx context.Context, id uint64) error {
 	return s.videoRepor.Delete(ctx, id)
 }
+
+func (s *service) GetAllVideosByCategory(ctx context.Context, id uint64) ([]*entity.Video, error) {
+	return s.videoRepor.FindAllVideosByCategory(ctx, id)
+}

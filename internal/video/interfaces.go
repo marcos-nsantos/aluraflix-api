@@ -15,6 +15,7 @@ type Writer interface {
 type Reader interface {
 	FindAll(ctx context.Context) ([]*entity.Video, error)
 	FindByID(ctx context.Context, id uint64) (*entity.Video, error)
+	FindAllVideosByCategory(ctx context.Context, id uint64) ([]*entity.Video, error)
 }
 
 type Repor interface {
@@ -28,4 +29,5 @@ type Service interface {
 	GetByID(ctx context.Context, id uint64) (*entity.Video, error)
 	Update(ctx context.Context, video *entity.Video, id uint64) error
 	Delete(ctx context.Context, id uint64) error
+	GetAllVideosByCategory(ctx context.Context, id uint64) ([]*entity.Video, error)
 }
