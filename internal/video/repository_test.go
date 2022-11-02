@@ -219,3 +219,46 @@ func TestDeleteVideo(t *testing.T) {
 		assert.ErrorIs(t, err, entity.ErrVideoNotFound)
 	})
 }
+
+func TestFindAllVideosByCategory(t *testing.T) {
+	videoRepo := NewRepository(dbConn)
+	categoryRepo := category.NewRepository(dbConn)
+
+	t.Run("should return all videos by category", func(t *testing.T) {
+		err := categoryRepo.Insert(context.Background(), &entity.Category{Title: "Free", Color: "#FFF"})
+		assert.NoError(t, err)
+
+		videos := []*entity.Video{
+			{
+				Title:       "O que é e pra que serve a linguagem Go?",
+				Description: "Você provavelmente já ouviu falar da linguagem de programação Go. Mas qual o propósito dela?",
+				URL:         "https://youtu.be/KfCNyIrqjsg",
+				CategoryID:  1,
+			},
+			{
+				Title: "Grandes sistemas em PHP com Vinicius Dias",
+				Description: "Os Grandes Sistemas em que o PHP foi usado, desde o Wordpress ou Magento, até a sua " +
+					"evolução com PHP 7 e PHP 8 aumentando a performance do código em comparação com a Hack " +
+					"Language, esta última criada pela Meta (Facebook) que começou utilizando PHP.",
+				URL:        "https://youtu.be/arZCoJMSTlI",
+				CategoryID: 1,
+			},
+		}
+
+		for _, video := range videos {
+			err = videoRepo.Insert(context.Background(), video)
+			assert.NoError(t, err)
+		}
+
+		videos, err = videoRepo.FindAllByCategory(context.Background(), 1)
+		assert.NoError(t, err)
+		assert.NotEmpty(t, videos)
+		assert.GreaterOrEqual(t, len(videos), 2)
+	})
+
+	t.Run("should return empty list when category does not exist", func(t *testing.T) {
+		videos, err := videoRepo.FindAllByCategory(context.Background(), 999)
+		assert.NoError(t, err)
+		assert.Empty(t, videos)
+	})
+}
