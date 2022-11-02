@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strconv"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/marcos-nsantos/aluraflix-api/internal/category"
 	"github.com/marcos-nsantos/aluraflix-api/internal/entity"
 	"github.com/marcos-nsantos/aluraflix-api/internal/transport/http/presenters"
@@ -57,5 +59,29 @@ func getAllCategories(service category.Service) http.HandlerFunc {
 
 		categoriesResponse := presenters.CategoriesResponse(categories)
 		presenters.JSONResponse(w, http.StatusOK, categoriesResponse)
+	}
+}
+
+func getCategoryByID(service category.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := chi.URLParam(r, "id")
+		idUint, err := strconv.ParseUint(id, 10, 64)
+		if err != nil {
+			presenters.JSONErrorResponse(w, http.StatusBadRequest, errors.New("invalid id"))
+			return
+		}
+
+		categoryFromDB, err := service.GetByID(r.Context(), idUint)
+		if err != nil {
+			if errors.Is(err, entity.ErrCategoryNotFound) {
+				presenters.JSONErrorResponse(w, http.StatusNotFound, err)
+				return
+			}
+			presenters.JSONErrorResponse(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		categoryResponse := presenters.CategoryResponse(categoryFromDB)
+		presenters.JSONResponse(w, http.StatusOK, categoryResponse)
 	}
 }
