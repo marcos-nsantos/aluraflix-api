@@ -4,6 +4,7 @@ import "github.com/marcos-nsantos/aluraflix-api/internal/entity"
 
 type Video struct {
 	ID          uint64 `json:"id"`
+	CategoryID  uint64 `json:"categoryId"`
 	Title       string `json:"title"`
 	Description string `json:"description,omitempty"`
 	URL         string `json:"url"`
@@ -14,6 +15,7 @@ type Video struct {
 func VideoResponse(video *entity.Video) *Video {
 	return &Video{
 		ID:          video.ID,
+		CategoryID:  video.CategoryID,
 		Title:       video.Title,
 		Description: video.Description,
 		URL:         video.URL,

@@ -31,10 +31,10 @@ func run() error {
 	r := chi.NewRouter()
 	httpServer := http.Server{Addr: ":8080", Handler: r}
 
-	videoRepo := video.NewRepository(db.Client)
-	videoServices := video.NewService(videoRepo)
-	categoryRepo := category.NewRepository(db.Client)
-	categoryServices := category.NewService(categoryRepo)
+	categoryRepor := category.NewRepository(db.Client)
+	categoryServices := category.NewService(categoryRepor)
+	videoRepor := video.NewRepository(db.Client)
+	videoServices := video.NewService(videoRepor, categoryRepor)
 
 	httpTransport.HandleRequests(r, videoServices, categoryServices)
 	if err = httpTransport.Handle(&httpServer); err != nil {

@@ -17,6 +17,7 @@ type PostVideoRequest struct {
 	Title       string `json:"title" validate:"required,notblank"`
 	Description string `json:"description" validate:"required,notblank"`
 	URL         string `json:"url" validate:"required,url"`
+	CategoryID  uint64 `json:"categoryId" validate:"required"`
 }
 
 func convertPostVideoRequestToVideo(video *PostVideoRequest) entity.Video {
@@ -24,6 +25,7 @@ func convertPostVideoRequestToVideo(video *PostVideoRequest) entity.Video {
 		Title:       video.Title,
 		Description: video.Description,
 		URL:         video.URL,
+		CategoryID:  video.CategoryID,
 	}
 }
 
@@ -42,6 +44,10 @@ func postVideo(service video.Service) http.HandlerFunc {
 
 		videoConverted := convertPostVideoRequestToVideo(&postVideo)
 		if err := service.Post(r.Context(), &videoConverted); err != nil {
+			if errors.Is(err, entity.ErrCategoryNotFound) {
+				presenters.JSONErrorResponse(w, http.StatusBadRequest, err)
+				return
+			}
 			presenters.JSONErrorResponse(w, http.StatusInternalServerError, err)
 			return
 		}
@@ -111,6 +117,10 @@ func updateVideo(service video.Service) http.HandlerFunc {
 		videoConverted := convertPostVideoRequestToVideo(&postVideo)
 		if err = service.Update(r.Context(), &videoConverted, idUint); err != nil {
 			if errors.Is(err, entity.ErrVideoNotFound) {
+				if errors.Is(err, entity.ErrCategoryNotFound) {
+					presenters.JSONErrorResponse(w, http.StatusBadRequest, err)
+					return
+				}
 				presenters.JSONErrorResponse(w, http.StatusNotFound, err)
 				return
 			}
