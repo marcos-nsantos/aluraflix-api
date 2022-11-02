@@ -25,3 +25,7 @@ func (s *service) GetAll(ctx context.Context) ([]*entity.Category, error) {
 func (s *service) GetByID(ctx context.Context, id uint64) (*entity.Category, error) {
 	return s.repo.FindByID(ctx, id)
 }
+
+func (s *service) Update(ctx context.Context, category *entity.Category) error {
+	return s.repo.Update(ctx, category)
+}
