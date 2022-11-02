@@ -47,5 +47,5 @@ func (s *service) Delete(ctx context.Context, id uint64) error {
 }
 
 func (s *service) GetAllVideosByCategory(ctx context.Context, id uint64) ([]*entity.Video, error) {
-	return s.videoRepor.FindAllVideosByCategory(ctx, id)
+	return s.videoRepor.FindAllByCategory(ctx, id)
 }

@@ -120,7 +120,7 @@ func (r *Repository) Delete(ctx context.Context, id uint64) error {
 	return nil
 }
 
-func (r *Repository) FindAllVideosByCategory(ctx context.Context, id uint64) ([]*entity.Video, error) {
+func (r *Repository) FindAllByCategory(ctx context.Context, id uint64) ([]*entity.Video, error) {
 	query := `SELECT id, title, description, url, category_id, created_at, updated_at FROM videos WHERE category_id = $1 AND deleted_at IS NULL`
 
 	rows, err := r.db.QueryContext(ctx, query, id)
