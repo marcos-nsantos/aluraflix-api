@@ -39,6 +39,7 @@ func handleCategoryRequests(r *chi.Mux, service category.Service) {
 		r.Post("/categories", postCategory(service))
 		r.Get("/categories", getAllCategories(service))
 		r.Get("/categories/{id}", getCategoryByID(service))
+		r.Put("/categories/{id}", updateCategory(service))
 	})
 }
 

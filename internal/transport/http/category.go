@@ -85,3 +85,39 @@ func getCategoryByID(service category.Service) http.HandlerFunc {
 		presenters.JSONResponse(w, http.StatusOK, categoryResponse)
 	}
 }
+
+func updateCategory(service category.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := chi.URLParam(r, "id")
+		idUint, err := strconv.ParseUint(id, 10, 64)
+		if err != nil {
+			presenters.JSONErrorResponse(w, http.StatusBadRequest, errors.New("invalid id"))
+			return
+		}
+
+		var postCategory PostCategoryRequest
+		if err = json.NewDecoder(r.Body).Decode(&postCategory); err != nil {
+			presenters.JSONErrorResponse(w, http.StatusBadRequest, errors.New("invalid request body"))
+			return
+		}
+
+		if ok, err := validator.Validate(postCategory); !ok {
+			presenters.JSONValidationResponse(w, err)
+			return
+		}
+
+		categoryConverted := convertPostCategoryRequestToCategory(&postCategory)
+		categoryConverted.ID = idUint
+		if err = service.Update(r.Context(), &categoryConverted); err != nil {
+			if errors.Is(err, entity.ErrCategoryNotFound) {
+				presenters.JSONErrorResponse(w, http.StatusNotFound, err)
+				return
+			}
+			presenters.JSONErrorResponse(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		categoryResponse := presenters.CategoryResponse(&categoryConverted)
+		presenters.JSONResponse(w, http.StatusOK, categoryResponse)
+	}
+}
