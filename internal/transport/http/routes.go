@@ -21,26 +21,27 @@ func HandleRequests(r *chi.Mux, vs video.Service, cs category.Service) {
 	r.Use(middleware.Heartbeat("/ping"))
 
 	handleVideoRequests(r, vs)
-	handleCategoryRequests(r, cs)
+	handleCategoryRequests(r, cs, vs)
 }
 
-func handleVideoRequests(r *chi.Mux, service video.Service) {
+func handleVideoRequests(r *chi.Mux, vs video.Service) {
 	r.Group(func(r chi.Router) {
-		r.Post("/videos", postVideo(service))
-		r.Get("/videos", getAllVideos(service))
-		r.Get("/videos/{id}", getVideoByID(service))
-		r.Put("/videos/{id}", updateVideo(service))
-		r.Delete("/videos/{id}", deleteVideo(service))
+		r.Post("/videos", postVideo(vs))
+		r.Get("/videos", getAllVideos(vs))
+		r.Get("/videos/{id}", getVideoByID(vs))
+		r.Put("/videos/{id}", updateVideo(vs))
+		r.Delete("/videos/{id}", deleteVideo(vs))
 	})
 }
 
-func handleCategoryRequests(r *chi.Mux, service category.Service) {
+func handleCategoryRequests(r *chi.Mux, cs category.Service, vs video.Service) {
 	r.Group(func(r chi.Router) {
-		r.Post("/categories", postCategory(service))
-		r.Get("/categories", getAllCategories(service))
-		r.Get("/categories/{id}", getCategoryByID(service))
-		r.Put("/categories/{id}", updateCategory(service))
-		r.Delete("/categories/{id}", deleteCategory(service))
+		r.Post("/categories", postCategory(cs))
+		r.Get("/categories", getAllCategories(cs))
+		r.Get("/categories/{id}", getCategoryByID(cs))
+		r.Put("/categories/{id}", updateCategory(cs))
+		r.Delete("/categories/{id}", deleteCategory(cs))
+		r.Get("/categories/{id}/videos", getAllVideosByCategory(vs))
 	})
 }
 

@@ -154,3 +154,27 @@ func deleteVideo(service video.Service) http.HandlerFunc {
 		presenters.JSONResponse(w, http.StatusOK, "video deleted")
 	}
 }
+
+func getAllVideosByCategory(service video.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		categoryID := chi.URLParam(r, "id")
+		categoryIDUint, err := strconv.ParseUint(categoryID, 10, 64)
+		if err != nil {
+			presenters.JSONErrorResponse(w, http.StatusBadRequest, errors.New("invalid category id"))
+			return
+		}
+
+		videos, err := service.GetAllVideosByCategory(r.Context(), categoryIDUint)
+		if err != nil {
+			if errors.Is(err, entity.ErrCategoryNotFound) {
+				presenters.JSONErrorResponse(w, http.StatusBadRequest, err)
+				return
+			}
+			presenters.JSONErrorResponse(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		videosResponse := presenters.VideosResponse(videos)
+		presenters.JSONResponse(w, http.StatusOK, videosResponse)
+	}
+}
