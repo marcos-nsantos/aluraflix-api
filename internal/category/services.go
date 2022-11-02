@@ -21,3 +21,7 @@ func (s *service) Post(ctx context.Context, category *entity.Category) error {
 func (s *service) GetAll(ctx context.Context) ([]*entity.Category, error) {
 	return s.repo.FindAll(ctx)
 }
+
+func (s *service) GetByID(ctx context.Context, id uint64) (*entity.Category, error) {
+	return s.repo.FindByID(ctx, id)
+}
