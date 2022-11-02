@@ -37,6 +37,7 @@ func handleVideoRequests(r *chi.Mux, service video.Service) {
 func handleCategoryRequests(r *chi.Mux, service category.Service) {
 	r.Group(func(r chi.Router) {
 		r.Post("/categories", postCategory(service))
+		r.Get("/categories", getAllCategories(service))
 	})
 }
 

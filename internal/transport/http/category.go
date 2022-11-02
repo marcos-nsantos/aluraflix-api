@@ -46,3 +46,16 @@ func postCategory(service category.Service) http.HandlerFunc {
 		presenters.JSONResponse(w, http.StatusCreated, categoryResponse)
 	}
 }
+
+func getAllCategories(service category.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		categories, err := service.GetAll(r.Context())
+		if err != nil {
+			presenters.JSONErrorResponse(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		categoriesResponse := presenters.CategoriesResponse(categories)
+		presenters.JSONResponse(w, http.StatusOK, categoriesResponse)
+	}
+}
